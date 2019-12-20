@@ -16,16 +16,21 @@ struct ContentView: View {
     
     var body: some View {
         NavigationView {
-            FullScreenLink(isPresented: self.$isPresented,
-                           destination: {
-                            self.destination
-                                .navigationBarItems(leading: self.closeButton)
-                                .navigationBarTitle("Full screen", displayMode: .inline)
-            }, content: {
-                self.menuView
-                    .navigationBarItems(leading: self.menuButton)
-                    .navigationBarTitle(Text("Menu"), displayMode: .inline)
-            })
+            MenuView(indexSelected: self.$index,
+                     isMenuHidden: self.$isMenuHidden,
+                     menuItems: menuItems,
+                     menuItemRow: { item in
+                        if item.kind == .text {
+                            Text("\(item.name)")
+                        } else {
+                            HStack {
+                                Image(systemName: "star.fill")
+                                Text("\(item.name) looks different")
+                            }
+                        }
+            }) { section in
+                self.fullScreenLink(section)
+            }
         }
     }
 }
@@ -42,24 +47,6 @@ extension ContentView {
                     Text("Tap to push")
                 }
             }
-        }
-    }
-
-    private var menuView: some View {
-        MenuView(indexSelected: self.$index,
-                 isMenuHidden: self.$isMenuHidden,
-                 menuItems: menuItems,
-                 menuItemRow: { item in
-                    if item.kind == .text {
-                        Text("\(item.name)")
-                    } else {
-                        HStack {
-                            Image(systemName: "star.fill")
-                            Text("\(item.name) looks different")
-                        }
-                    }
-        }) { section in
-            self.page(at: section)
         }
     }
 
@@ -83,7 +70,20 @@ extension ContentView {
             Image(systemName: self.isMenuHidden ? "list.bullet" : "xmark" )
         }
     }
-    
+
+    func fullScreenLink(_ section: Int) -> some View {
+        FullScreenLink(isPresented: self.$isPresented,
+                       destination: {
+                        self.destination
+                            .navigationBarItems(leading: self.closeButton)
+                            .navigationBarTitle("Full screen", displayMode: .inline)
+        }, content: {
+            self.page(at: section)
+                .navigationBarItems(leading: self.menuButton)
+                .navigationBarTitle(Text("Section \(section)"), displayMode: .inline)
+        })
+    }
+
     func page(at section: Int) -> some View {
         ZStack {
             Rectangle()

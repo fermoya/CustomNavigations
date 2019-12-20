@@ -31,12 +31,6 @@ struct FullScreenLink<Content, Destionation>: View where Content: View, Destiona
                         .transition(.move(edge: .bottom))
                 } else {
                     self.content()
-                        .onAppear(perform: {
-                            print("Content appeared")
-                        })
-                        .onDisappear (perform: {
-                            print("Content disappeared")
-                        })
                 }
             }
         }
