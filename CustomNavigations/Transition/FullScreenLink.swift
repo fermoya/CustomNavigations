@@ -25,11 +25,18 @@ struct FullScreenLink<Content, Destionation>: View where Content: View, Destiona
     var body: some View {
         GeometryReader { proxy in
             ZStack {
-                self.content()
                 if self.isPresented {
                     self.destination()
                         .background(Color.yellow)
                         .transition(.move(edge: .bottom))
+                } else {
+                    self.content()
+                        .onAppear(perform: {
+                            print("Content appeared")
+                        })
+                        .onDisappear (perform: {
+                            print("Content disappeared")
+                        })
                 }
             }
         }

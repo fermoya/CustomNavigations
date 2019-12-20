@@ -15,48 +15,54 @@ struct ContentView: View {
     @State var isMenuHidden = true
     
     var body: some View {
-        FullScreenLink(isPresented: self.$isPresented,
-                       destination: {
-                        NavigationView {
-                            ZStack {
-                                Rectangle()
-                                    .fill(Color.yellow)
-                                VStack {
-                                    Text("I've been presented")
-                                    NavigationLink(destination: Text("Pushed")) {
-                                        Text("Tap to push")
-                                    }
-                                }
-                            }
-                            .navigationBarItems(leading: self.isPresented ? AnyView(self.closeButton) : AnyView(EmptyView()))
-                            .navigationBarTitle("Full screen", displayMode: .inline)
-                        }
-        }, content: {
-            NavigationView {
-                MenuView(indexSelected: self.$index,
-                         isMenuHidden: self.$isMenuHidden,
-                         menuItems: menuItems,
-                         menuItemRow: { item in
-                            if item.kind == .text {
-                                Text("\(item.name)")
-                            } else {
-                                HStack {
-                                    Image(systemName: "star.fill")
-                                    Text("\(item.name) looks different")
-                                }
-                            }
-                }) { section in
-                    self.page(at: section)
-                }
-                .navigationBarItems(leading: self.menuButton)
-                .navigationBarTitle(Text("Menu"), displayMode: .inline)
-            }
-        })
+        NavigationView {
+            FullScreenLink(isPresented: self.$isPresented,
+                           destination: {
+                            self.destination
+                                .navigationBarItems(leading: self.closeButton)
+                                .navigationBarTitle("Full screen", displayMode: .inline)
+            }, content: {
+                self.menuView
+                    .navigationBarItems(leading: self.menuButton)
+                    .navigationBarTitle(Text("Menu"), displayMode: .inline)
+            })
+        }
     }
 }
 
 extension ContentView {
-    
+
+    private var destination: some View {
+        ZStack {
+            Rectangle()
+                .fill(Color.yellow)
+            VStack {
+                Text("I've been presented")
+                NavigationLink(destination: Text("Pushed")) {
+                    Text("Tap to push")
+                }
+            }
+        }
+    }
+
+    private var menuView: some View {
+        MenuView(indexSelected: self.$index,
+                 isMenuHidden: self.$isMenuHidden,
+                 menuItems: menuItems,
+                 menuItemRow: { item in
+                    if item.kind == .text {
+                        Text("\(item.name)")
+                    } else {
+                        HStack {
+                            Image(systemName: "star.fill")
+                            Text("\(item.name) looks different")
+                        }
+                    }
+        }) { section in
+            self.page(at: section)
+        }
+    }
+
     private var closeButton: some View {
         Button(action: {
             withAnimation {
