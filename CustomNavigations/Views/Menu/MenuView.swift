@@ -10,7 +10,7 @@ import SwiftUI
 
 struct MenuView<Item, Row, Content>: View where Item: Identifiable & Equatable, Row: View, Content: View {
     
-    @Binding private var isMenuHidden: Bool
+    @Binding private var isMenuRevealed: Bool
     @State private var draggingOffset: CGFloat = 0
     
     @Binding var indexSelected: Int
@@ -21,7 +21,7 @@ struct MenuView<Item, Row, Content>: View where Item: Identifiable & Equatable, 
     
     init(indexSelected: Binding<Int>, isMenuHidden: Binding<Bool>, menuItems: [Item], revealRatio: CGFloat = 0.8, @ViewBuilder menuItemRow: @escaping (Item) -> Row, @ViewBuilder menuItemContent: @escaping (Int) -> Content) {
         self._indexSelected = indexSelected
-        self._isMenuHidden = isMenuHidden
+        self._isMenuRevealed = isMenuHidden
         self.menuItems = menuItems
         self.revealRatio = revealRatio
         self.menuItemRow = menuItemRow
@@ -34,7 +34,7 @@ struct MenuView<Item, Row, Content>: View where Item: Identifiable & Equatable, 
                 self.contentView
                     .onTapGesture (perform: {
                         withAnimation {
-                            self.isMenuHidden = true
+                            self.isMenuRevealed = true
                         }
                     })
                 self.revealList
@@ -44,12 +44,12 @@ struct MenuView<Item, Row, Content>: View where Item: Identifiable & Equatable, 
             }.gesture(DragGesture()
                 .onChanged({ value in
                     withAnimation {
-                        self.draggingOffset = self.isMenuHidden ? max(0, min(self.revealListSize(proxy).width, value.translation.width)) : min(0, max(-self.revealListSize(proxy).width, value.translation.width))
+                        self.draggingOffset = self.isMenuRevealed ? max(0, min(self.revealListSize(proxy).width, value.translation.width)) : min(0, max(-self.revealListSize(proxy).width, value.translation.width))
                     }
                 }).onEnded({ _ in
                     withAnimation {
                         if abs(self.draggingOffset) > self.revealListSize(proxy).width / 2 {
-                            self.isMenuHidden.toggle()
+                            self.isMenuRevealed.toggle()
                         }
                         self.draggingOffset = 0
                     }
@@ -62,7 +62,7 @@ extension MenuView {
     
     private func revealListOffset(_ proxy: GeometryProxy) -> CGPoint {
         let hiddenOffset = -proxy.size.width * ((1 - revealRatio) * 0.5 + revealRatio) + draggingOffset
-        return CGPoint(x: self.isMenuHidden ? hiddenOffset : hiddenOffset + revealListSize(proxy).width,
+        return CGPoint(x: self.isMenuRevealed ? hiddenOffset : hiddenOffset + revealListSize(proxy).width,
                        y: 0)
     }
     
@@ -84,7 +84,7 @@ extension MenuView {
                 self.menuItemRow(item)
                     .onTapGesture (perform: {
                         withAnimation {
-                            self.isMenuHidden = true
+                            self.isMenuRevealed = true
                             self.indexSelected = self.menuItems.firstIndex(of: item)!
                         }
                     })
@@ -93,9 +93,3 @@ extension MenuView {
     }
     
 }
-
-//struct MenuView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        MenuView()
-//    }
-//}
