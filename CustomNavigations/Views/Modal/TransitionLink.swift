@@ -13,9 +13,7 @@ protocol TransitionLinkType {
 }
 
 struct TransitionLink<Content, Destination>: View where Content: View, Destination: View {
-    
-    private var toggleButtonSize = CGSize(width: 50, height: 50)
-    
+
     @Binding var isPresented: Bool
     var content: () -> Content
     var destination: () -> Destination
@@ -29,14 +27,12 @@ struct TransitionLink<Content, Destination>: View where Content: View, Destinati
     }
     
     var body: some View {
-        GeometryReader { proxy in
-            ZStack {
-                if self.isPresented {
-                    self.destination()
-                        .transition(self.linkType.transition)
-                } else {
-                    self.content()
-                }
+        ZStack {
+            if self.isPresented {
+                self.destination()
+                    .transition(self.linkType.transition)
+            } else {
+                self.content()
             }
         }
     }
