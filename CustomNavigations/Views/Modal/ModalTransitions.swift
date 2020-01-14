@@ -11,6 +11,7 @@ import SwiftUI
 enum ModalTransition: TransitionLinkType {
     case circleReveal
     case fullScreenModal
+    case scale
 
     var transition: AnyTransition {
         switch self {
@@ -18,6 +19,8 @@ enum ModalTransition: TransitionLinkType {
             return .reveal(shape: ScalableCircle.self)
         case .fullScreenModal:
             return .move(edge: .bottom)
+        case .scale:
+            return .scale(scale: 0)
         }
     }
 }

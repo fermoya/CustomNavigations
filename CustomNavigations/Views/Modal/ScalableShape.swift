@@ -33,7 +33,7 @@ struct ScalableCircle: ScalableShape {
     }
 }
 
-struct ClipShapeModifier<T: Shape>: ViewModifier {
+struct ClipShapeModifier<T: ScalableShape>: ViewModifier {
     let shape: T
 
     func body(content: Content) -> some View {
